@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>视频播放</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.css">
+  <style>body{margin:0;background:#000}</style>
+</head>
+<body>
+<div id="dplayer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.js"></script>
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const videoUrl = urlParams.get('url');
+
+  if (!videoUrl) {
+    document.body.innerHTML = '<h2 style="color:white;text-align:center">缺少视频地址</h2>';
+  } else {
+    const dp = new DPlayer({
+      container: document.getElementById('dplayer'),
+      autoplay: false,
+      video: {
+        url: videoUrl,
+        type: 'customHls',
+        customType: {
+          customHls: function (video, player) {
+            if (Hls.isSupported()) {
+              const hls = new Hls();
+              hls.loadSource(video.src);
+              hls.attachMedia(video);
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+              video.src = video.src;
+            }
+          }
+        }
+      }
+    });
+  }
+</script>
+</body>
+</html>
